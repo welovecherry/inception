@@ -45,3 +45,5 @@ EXPOSE 80 443
 
 # MariaDB, PHP-FPM, Nginx를 동시에 실행
 CMD service mysql start && service php7.3-fpm start && nginx -g "daemon off;"
+
+# cherrylove
