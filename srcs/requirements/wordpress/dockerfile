@@ -1,0 +1,26 @@
+# Use Debian Buster as the base image for compatibility and stability
+FROM debian:buster
+
+# Update the package list and install necessary packages
+# php-fpm is required to process PHP files
+# php-mysql is required for PHP to communicate with a MySQL database
+# curl is used to download the WordPress CLI tool
+RUN apt update -y && \
+    apt install -y \
+    php-fpm \
+    php-mysql \
+    curl \
+    default-mysql-client
+
+# Copy the WordPress initialization script and the WordPress configuration file into the container
+# These files should be in the same directory as the Dockerfile, under a ./tools subdirectory
+COPY ./tools/script.sh /
+COPY ./tools/wp-config.php /
+
+# Make the initialization script executable
+# This is necessary to ensure that the container can run the script on startup
+RUN chmod +x /script.sh
+
+# Set the command to run the initialization script when the container starts
+# The script performs several tasks including setting up WordPress and configuring PHP-FPM
+CMD ["/script.sh"]
