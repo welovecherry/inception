@@ -1,5 +1,5 @@
-# Use Debian Buster as the base image for compatibility and stability
-FROM debian:buster
+# 가장 최신 버전: Debian 12(Bookworm), 두번째 최신 버전: Debian 11(Bullseye)
+FROM debian:bullseye
 
 # Update the package list and install necessary packages
 # php-fpm is required to process PHP files

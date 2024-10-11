@@ -1,20 +1,24 @@
-# Use Debian Buster as the base image for compatibility with MariaDB packages
-FROM debian:buster
+# 가장 최신 버전: Debian 12(Bookworm), 두번째 최신 버전: Debian 11(Bullseye)
+FROM debian:bullseye
 
-# Update the package list and install MariaDB server
-# Clean up the apt cache to reduce the image size
+# 패키지 목록을 업데이트하고 MariaDB 서버를 설치
+# 패키지 설치 후 캐시 삭제
 RUN apt-get update && \
     apt-get install -y mariadb-server && \
+# 캐시 삭제해서 이미지 크기를 줄임
+# 캐시: 이미지 빌드 중에 생성되는 파일로, 이미지 생성 시 사용된 파일들을 캐시로 저장해 두었다가 다음 빌드 시에 재사용
     rm -rf /var/lib/apt/lists/*
 
-# Copy the custom MariaDB configuration file to the container
+# MariaDB 서버를 실행할 때 사용할 설정 파일을 복사
+# 로컬의 50-server.cnf 파일을 컨테이너의 /etc/mysql/mariadb.conf.d/ 디렉터리로 복사
 COPY ./tools/50-server.cnf /etc/mysql/mariadb.conf.d/
 
-# Copy the initialization script to the container
+# MariaDB 서버를 실행할 때 사용할 스크립트 파일을 복사
+# 초기화 스크립트: MariaDB 서버가 처음 시작될 때 초기 설정을 수행하는 스크립트
 COPY ./tools/script.sh /script.sh
 
-# Make sure the script is executable
+# 쉘 스크립트 파일을 실행 가능하도록 권한 부여
 RUN chmod +x /script.sh
 
-# Run the script to initialize the database and start MariaDB
+# 스트립트 파일을 실행, 이 스크립트로 MariaDB 서버를 실행하고 초기 설정을 수행
 CMD ["/script.sh"]

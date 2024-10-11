@@ -1,18 +1,25 @@
-version: '3.8'
+# version of docker-compose
+version: '3.8' 
 
 services:
   nginx:
     image: nginx:jungmiho
     build: 
       context: ./requirements/nginx
+# CERTS_ is the path of the directory where the certificates are stored.
     environment:
       CERTS_: ${CERTS_}
     ports:
       - "443:443"
     volumes:
       - web-data:/var/www/html
+# wordpress should be started before nginx. 엔진엑스가 워드프레스에 의존해서.
+# 하지만 실행 순서를 보장할 뿐 워드프레스가 실행되는 동안 엔진엑스가 실행되지 않도록 하는 것은 아니다.
+# 따라서 특정 서비스가 준비된 후에 다른 서비스를 시작하려면 헬스 체크나 리트라이를 사용해야 한다.
     depends_on:
       - wordpress
+# 웹넷: 워드프레스, 엔진엑스, 마리아디비 컨테이너가 사용하는 네트워크
+# 이를 통해 동일한 네트워크에 속하게 되어 컨테이너 간에 통신할 수 있다. (아래에 보면 3번 네트워크 정의)
     networks:
       - webnet
 
@@ -49,19 +56,25 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+# 마리아디비 볼룜 이름이 db-data이다. 이 볼룜은 /var/lib/mysql 디렉터리에 마운트된다.
     volumes:
       - db-data:/var/lib/mysql
     networks:
       - webnet
 
+# 글로벌 볼륨을 설정해서 데이터 저장하는 위치를 명확히 해서 컨테이너가 삭제되어도 데이터가 유지되도록 한다.
 volumes:
+# db-data 볼룜은 마리아디비 데이터베이스를 저장하는 데 사용된다.
   db-data:
     driver: local
     driver_opts:
       type: none
+# 바인드 마운트로 사용해서 호스트 시스템의 특정 디렉토리를 컨테이너와 연결할 수 있습니다.
       o: bind
       device: /home/jungmiho/data/mariadb
+# web-data 볼룜은 워드프레스와 엔진엑스가 사용하는 웹 데이터를 저장하는 데 사용된다.
   web-data:
+# 해당 볼륨이 호스트 시스템의 로컬 파일 시스템에 저장됨을 나타내기 위한 것
     driver: local
     driver_opts:
       type: none

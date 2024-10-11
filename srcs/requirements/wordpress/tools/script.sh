@@ -1,8 +1,10 @@
 #!/bin/bash
 
-# Ensure the script exits on first error
+# 여기 있는 모든 에코 부분 삭제하거나 수정 가능
+# 오류 발생 시 스크립트 중단하기
 set -e
 
+# 콘솔에 워드프레스 디렉토리가 생성되었음을 알리는 메시지 출력
 echo "Creating directory structure for WordPress..."
 mkdir -p /var/www/html
 
@@ -22,6 +24,7 @@ echo "Moved WP CLI to PATH."
 echo "Downloading WordPress..."
 wp core download --allow-root
 
+# wp-config.php 파일이 존재하는지 확인하고, 존재한다면 워드프레스 디렉토리로 이동
 if [ -f /wp-config.php ]; then
     echo "Moving wp-config.php to the WordPress directory..."
     mv /wp-config.php .
@@ -31,6 +34,8 @@ else
 fi
 
 echo "Setting database connection details in wp-config.php..."
+
+# wp-config.php 파일에서 DB_NAME, DB_USER, DB_PASSWORD, DB_HOST를 환경변수로 대체
 sed -i -r "s/database_name_here/${WORDPRESS_DB_NAME}/" wp-config.php
 sed -i -r "s/username_here/${WORDPRESS_DB_USER}/" wp-config.php
 sed -i -r "s/password_here/${WORDPRESS_DB_PASSWORD}/" wp-config.php
@@ -42,6 +47,7 @@ echo "Database User: ${WORDPRESS_DB_USER}"
 [ -z "${WORDPRESS_DB_PASSWORD}" ] && echo "Database Password is not set." || echo "Database Password is set."
 
 echo "Checking direct database connectivity..."
+# mysql 명령어를 사용하여 데이터베이스에 연결할 수 있는지 확인
 until mysql -h"${WORDPRESS_DB_HOST}" -u"${WORDPRESS_DB_USER}" -p"${WORDPRESS_DB_PASSWORD}" -e ';' ; do
     echo "Waiting for direct database connection..."
     sleep 5
@@ -49,6 +55,7 @@ done
 echo "Direct database connectivity confirmed."
 
 echo "Verifying database readiness with WP CLI..."
+# wp db check 명령어를 사용하여 WP CLI를 통해 데이터베이스에 연결할 수 있는지 확인
 until wp db check --path=/var/www/html --allow-root >/dev/null 2>&1; do
     echo "Retrying WP CLI database connection..."
     sleep 5
