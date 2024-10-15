@@ -1,4 +1,4 @@
-# 마리아디비 서버의 설정 파일. 이 파일이 없으면 기본 설정으로 실행됨. (사용자 정의 설정이 적용 안됨)
+# MariaDB database server configuration file.
 
 [server]
 
@@ -6,17 +6,17 @@
 user                    = mysql
 pid-file                = /var/run/mysqld/mysqld.pid
 socket                  = /var/run/mysqld/mysqld.sock
-port                    = 3306
+port                    = 3306 # default port for MySQL and MariaDB
 basedir                 = /usr
 datadir                 = /var/lib/mysql
 tmpdir                  = /tmp
 lc-messages-dir         = /usr/share/mysql
 
 # Security settings
-bind-address            = 0.0.0.0  # Allows connections from any IP, adjust as necessary
+bind-address            = 0.0.0.0  # Allows connections from all IP addresses
 
 # Character sets
-character-set-server    = utf8mb4
+character-set-server    = utf8mb4 # full unicode support
 collation-server        = utf8mb4_general_ci
 
 # Logging and Replication
@@ -30,14 +30,14 @@ innodb_file_per_table   = 1     # Isolate each table into its own ibd file, impr
 
 [mysqld]
 
-# Cache and limits
+# Cache size and memory limit configuration
 max_allowed_packet      = 64M   # Increased to allow larger packets, helpful for bulky operations
 thread_stack            = 256K  # Default is usually fine, adjusted for safety
 thread_cache_size       = 16    # Helps by caching threads, reducing overhead of creating new ones
 max_connections         = 200   # Adjust based on expected workload and server capacity
 
-# Query Cache Configuration (for compatibility, not used in MySQL 8.0+)
-query_cache_limit       = 2M    # Increase if you have lots of identical queries
+# Query Cache Configuration for performance improvement
+query_cache_limit       = 2M    # Limit the size of results stored in cache
 query_cache_size        = 32M   # Adjust based on workload and available server memory
 
 # Additional recommended settings
@@ -46,6 +46,6 @@ connect_timeout         = 10    # Reduce if too many aborted connections, increa
 
 [mysqld_safe]
 
-# Safe mode settings
-socket                  = /var/run/mysqld/mysqld.sock
-nice                    = 0
+# Safe mode settings for stability
+socket                  = /var/run/mysqld/mysqld.sock # socket is a way  for Processes
+nice                    = 0 # Process priority (0 is defualt)

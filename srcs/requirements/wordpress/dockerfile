@@ -1,10 +1,10 @@
-# 가장 최신 버전: Debian 12(Bookworm), 두번째 최신 버전: Debian 11(Bullseye)
+# latest Debian image: bookworm, second latest: bullseye
 FROM debian:bullseye
 
-# Update the package list and install necessary packages
-# php-fpm is required to process PHP files
-# php-mysql is required for PHP to communicate with a MySQL database
-# curl is used to download the WordPress CLI tool
+# -php-fpm: handle PHP requests
+# -php-mysql: connect to MySQL databases
+# -curl: download files from the internet
+# -default-mysql-client: connect to MySQL databases
 RUN apt update -y && \
     apt install -y \
     php-fpm \
@@ -12,15 +12,12 @@ RUN apt update -y && \
     curl \
     default-mysql-client
 
-# Copy the WordPress initialization script and the WordPress configuration file into the container
-# These files should be in the same directory as the Dockerfile, under a ./tools subdirectory
+# Copy the WordPress files into the container
+# script.sh: initialize the WordPress installation
+# wp-config.php: WordPress configuration file
 COPY ./tools/script.sh /
 COPY ./tools/wp-config.php /
 
-# Make the initialization script executable
-# This is necessary to ensure that the container can run the script on startup
 RUN chmod +x /script.sh
 
-# Set the command to run the initialization script when the container starts
-# The script performs several tasks including setting up WordPress and configuring PHP-FPM
 CMD ["/script.sh"]
