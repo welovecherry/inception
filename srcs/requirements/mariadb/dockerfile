@@ -1,15 +1,20 @@
-# latest Debian image: bookworm, second latest: bullseye
-FROM debian:bullseye
+# Use Debian Buster as the base image for compatibility with MariaDB packages
+FROM debian:buster
 
+# Update the package list and install MariaDB server
+# Clean up the apt cache to reduce the image size
 RUN apt-get update && \
     apt-get install -y mariadb-server && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
+# Copy the custom MariaDB configuration file to the container
 COPY ./tools/50-server.cnf /etc/mysql/mariadb.conf.d/
 
+# Copy the initialization script to the container
 COPY ./tools/script.sh /script.sh
 
+# Make sure the script is executable
 RUN chmod +x /script.sh
 
-# when a container is started from this image, the script will be executed
+# Run the script to initialize the database and start MariaDB
 CMD ["/script.sh"]

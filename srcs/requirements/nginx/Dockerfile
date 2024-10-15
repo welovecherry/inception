@@ -1,43 +1,24 @@
-# latest Debian image: bookworm, second latest: bullseye
-# FROM debian:bullseye
+# Use Debian Buster as the base image for compatibility and stability
+FROM debian:buster
 
-# -nginx: web server to handle HTTP/HTTPS requests
-# -openssl: generate SSL certificates
-# -clean up the apt cache to reduce the image size
-# RUN apt-get update -y && \
-#     apt-get install -y nginx openssl && \
-#     apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Copy the script to the container's root directory
-# entry point: script.sh
-# COPY ./tools/script.sh /script.sh
-
-# RUN chmod +x /script.sh
-
-# EXPOSE 443
-
-# when a container is started from this image, the script will be executed
-# CMD ["/script.sh"]
-
-
-# latest Debian image: bookworm, second latest: bullseye
-FROM debian:bullseye
-
-# -nginx: web server to handle HTTP/HTTPS requests
-# -openssl: generate SSL certificates
-# -clean up the apt cache to reduce the image size
+# Update package list and install Nginx and OpenSSL
+# Nginx is used as the web server
+# OpenSSL is used to generate a self-signed SSL certificate for HTTPS
 RUN apt-get update -y && \
     apt-get install -y nginx openssl && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy the script to the container's root directory
+# Copy the startup script into the container
+# This script will generate an SSL certificate and configure Nginx
 COPY ./tools/script.sh /script.sh
 
 # Make sure the script is executable
 RUN chmod +x /script.sh
 
-# Expose port 443 for HTTPS
+# Expose port 443 for HTTPS traffic
 EXPOSE 443
 
-# Set script.sh as the entrypoint to be executed when the container starts
-ENTRYPOINT ["/script.sh"]
+# Set the CMD to your startup script
+# This script configures and starts Nginx with the generated SSL certificate
+CMD ["/script.sh"]

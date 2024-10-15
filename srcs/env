@@ -1,0 +1,24 @@
+# Site configuration
+DOMAIN_NAME= jungmiho.42.fr
+WP_TITLE=jungmiho_inception
+WP_ADMIN_USR= jungmiho
+WP_ADMIN_PWD= jungmiho123
+WP_ADMIN_EMAIL= jungmiho@com
+WP_USR=cherry
+WP_PWD=cherry123
+WP_EMAIL=cherry@com
+
+# SSL Certificate Path
+CERTS_=/etc/ssl/certs/nginx-selfsigned.crt
+
+# WordPress database configuration
+WORDPRESS_DB_HOST=mariadb
+WORDPRESS_DB_USER=wordpress_user
+WORDPRESS_DB_PASSWORD=wordpress_password
+WORDPRESS_DB_NAME=wordpress_db
+
+# MariaDB configuration
+MYSQL_ROOT_PASSWORD=supersecret
+MYSQL_DATABASE=wordpress_db
+MYSQL_USER=wordpress_user
+MYSQL_PASSWORD=wordpress_password
